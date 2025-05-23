@@ -22,7 +22,7 @@ build: ## Builds the Docker images
 	@$(DOCKER_COMP) build --pull --no-cache
 
 up: ## Start the docker hub in detached mode (no logs)
-	@$(DOCKER_COMP) up --detach
+	@XDEBUG_MODE=debug $(DOCKER_COMP) up --detach
 
 start: build up ## Build and start the containers
 
@@ -40,7 +40,7 @@ bash: ## Connect to the FrankenPHP container via bash so up and down arrows go t
 
 test: ## Start tests with phpunit, pass the parameter "c=" to add options to phpunit, example: make test c="--group e2e --stop-on-failure"
 	@$(eval c ?=)
-	@$(DOCKER_COMP) exec -e APP_ENV=test php bin/phpunit $(c)
+	@$(DOCKER_COMP) exec -e APP_ENV=test -e XDEBUG_SESSION=1 -e PHP_IDE_CONFIG="serverName=symfony" php bin/phpunit $(c)
 
 
 ## —— Composer 🧙 ——————————————————————————————————————————————————————————————
