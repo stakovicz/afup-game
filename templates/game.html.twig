@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Game{% endblock %}
+
+{% block body %}
+
+    <div>Scores :</div>
+    <div>Team red : <span id="red"></span></div>
+    <div>Team blue : <span id="blue"></span></div>
+
+    <script>
+        const $sred = document.getElementById("red");
+        const $sblue = document.getElementById("blue");
+
+
+        const eventSource = new EventSource("{{ mercure(topics)|escape('js') }}");
+        window.addEventListener("unload", () => {
+            eventSource.close();
+        });
+        eventSource.onmessage = e => {
+            const event = JSON.parse(e.data);
+            console.log(event);
+            if (event.name === 'scores') {
+                $sred.textContent = parseInt(event.scores.red);
+                $sblue.textContent = parseInt(event.scores.blue);
+            }
+        }
+    </script>
+{% endblock %}

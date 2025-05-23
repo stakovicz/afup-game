@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Admin</h1>
+    {{ form_start(stage) }}
+    {{ form_end(stage) }}
+</div>
+
+    <div>Players : <span id="players"></span></div>
+    <div>Team red : <span id="red"></span></div>
+    <div>Team blue : <span id="blue"></span></div>
+
+
+
+    <div>Scores :</div>
+    <div>Team red : <span id="sred"></span></div>
+    <div>Team blue : <span id="sblue"></span></div>
+
+    <script>
+        const $players = document.getElementById("players");
+        const $red = document.getElementById("red");
+        const $blue = document.getElementById("blue");
+        const $sred = document.getElementById("sred");
+        const $sblue = document.getElementById("sblue");
+        const fetchPlayers = async function() {
+            try {
+                const response = await fetch("{{ path("api_players") }}");
+                if (!response.ok) {
+                    console.error(response)
+                }
+                const players = await response.json();
+                $red.textContent = players.red;
+                $blue.textContent = players.blue;
+                $players.textContent = players.red + players.blue;
+            } catch (e) {
+                console.error(e)
+            }
+        };
+        fetchPlayers();
+        setInterval(fetchPlayers, 1000);
+
+        const eventSource = new EventSource("{{ mercure(topics)|escape('js') }}");
+        window.addEventListener("unload", () => {
+            eventSource.close();
+        });
+        eventSource.onmessage = e => {
+            const event = JSON.parse(e.data);
+            console.log(event);
+            if (event.name === 'scores') {
+                $sred.textContent = parseInt(event.scores.red);
+                $sblue.textContent = parseInt(event.scores.blue);
+            }
+        }
+    </script>
+{% endblock %}

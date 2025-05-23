@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Player{% endblock %}
+
+{% block body %}
+    <div>Team : <span id="team"></span></div>
+    <div>Stage : <span id="stage"></span></div>
+    <form action="">
+        <button id="add" type="button">ADD</button>
+        <button id="remove" type="button">REM</button>
+    </form>
+    <script>
+        const $add = document.getElementById('add');
+        const $remove = document.getElementById('remove');
+        const $team = document.getElementById('team');
+        $team.textContent = '-';
+
+        const $stage = document.getElementById('stage');
+        $stage.textContent = '-';
+
+        fetch("{{ path('api_register') }}", {method: "POST"})
+            .then(async (response) => {
+                const data = await response.json();
+
+                $team.textContent = data.team;
+                document.title = document.title += ' '+data.team;
+
+                const eventSource = new EventSource(data.game_url);
+                window.addEventListener("unload", () => {
+                    eventSource.close();
+                });
+                eventSource.onmessage = e => {
+                    const event = JSON.parse(e.data);
+                    console.log(event)
+                    if (event.stage) {
+                        $stage.textContent = event.stage;
+                    }
+                    if (event.name === 'winner' && event.team === data.team) {
+                        $stage.textContent = 'WINNER';
+                    }
+                }
+
+                $add.addEventListener('click', async () => {
+                    await fetch(data.play_url, {
+                        headers: {"Content-Type": "application/json"},
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: "add",
+                            team: data.team
+                        })
+                    })
+                })
+
+                $remove.addEventListener('click', async () => {
+                    await fetch(data.play_url, {
+                        headers: {"Content-Type": "application/json"},
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: "remove",
+                            team: data.team
+                        })
+                    })
+                })
+            });
+    </script>
+{% endblock %}
