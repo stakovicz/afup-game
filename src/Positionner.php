@@ -102,6 +102,20 @@ class Positionner
         return $this->points;
     }
 
+    public function showGridPoints(): string
+    {
+        $return = '';
+        $grid = $this->getFullGridPoints();
+        foreach ($grid as $cols) {
+            $row = '';
+            foreach($cols as $col) {
+                $row .= sprintf("%-3s", $col?->name);
+            }
+            $return .= trim($row).PHP_EOL;
+        }
+        return $return;
+    }
+
     private function getStart(): Point
     {
         $start = current($this->points);
@@ -112,5 +126,7 @@ class Positionner
             $start = $start->getPointLeft();
         }
         return $start;
+
     }
 }
+

@@ -4,13 +4,13 @@ namespace App\Game;
 
 final readonly class Stage
 {
-    public function __construct(public int $number, private Game $game)
+    public function __construct(public int $number, private Engine $engine)
     {
     }
 
     public function isOver(): bool
     {
-        foreach($this->game->scores as $score) {
+        foreach($this->engine->getScores() as $score) {
             if ($score >= 10) {
                 return true;
             }
@@ -20,7 +20,7 @@ final readonly class Stage
 
     public function getWinner(): string|false
     {
-        foreach($this->game->scores as $team => $score) {
+        foreach($this->engine->getScores() as $team => $score) {
             if ($score >= 10) {
                 return $team;
             }

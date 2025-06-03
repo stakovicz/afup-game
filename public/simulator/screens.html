@@ -1,0 +1,19 @@
+<html lang="">
+  <head>
+    <title>SIM</title>
+  </head>
+<body>
+
+  <script>
+    const CLIENTS = 16;
+
+    for (let i = 0; i < CLIENTS; i++) {
+      const iframe = document.createElement("iframe");
+      iframe.src = '/';
+      iframe.width = '150px';
+      iframe.height = '150px';
+      document.body.appendChild(iframe);
+    }
+  </script>
+</body>
+</html>

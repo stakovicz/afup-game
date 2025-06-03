@@ -47,6 +47,9 @@ class PositionnerTest extends TestCase
         foreach ($points as $point) {
             $count++;
             $positionner->add($point);
+            $positionner->link();
+            echo $positionner->showGridPoints();
+            echo PHP_EOL;
         }
 
         $positionner->link();
